@@ -13,7 +13,7 @@ Make sure you have Node.js installed on your system. If Node.js is not already i
 
 2. Install npm
 please chechk npm (Node Package Manager) is installed along with Node.js. Verify the installation by running the following command:
-## npm -v
+npm -v
 
 If not installed, follow next step.
 
@@ -27,10 +27,11 @@ This will install all the packages listed in the package.json file.
 4. Install Additional Packages
 You will also need to install the qrcode package separately:
 
-## npm install qrcode
+npm install qrcode
 
+## Running the Backend
 Once all packages are installed, you can run and test the backend, please input the below instruction in your terminal.
-## node server.js  
+node server.js  
 
 
 
