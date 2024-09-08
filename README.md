@@ -40,3 +40,7 @@ For our project, we use the mysql database.
 ###### JWT_SECRET=""
 
 
+## There are three data tables: 
+#####  Course, Room, Teacher
+
+
