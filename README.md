@@ -30,5 +30,13 @@ You will also need to install the qrcode package separately:
 Once all packages are installed, you can run and test the backend, please input the below instruction in your terminal.
 ###### node server.js  
 
+## Setting your Database
+For our project, we use the mysql database.
+###### please set your .env file
+###### MSQYL_HOST="",
+###### MYSQL_USER="",
+###### MYSQL_PASSWORD="",
+###### MYSQL_DB="",
+###### JWT_SECRET=""
 
 
