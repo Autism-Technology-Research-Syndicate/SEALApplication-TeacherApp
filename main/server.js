@@ -9,13 +9,13 @@ app.listen(PORT, () => {
 
 
 
-// app.get('/teachers', async (req, res) => {
-//     try {
-//       const [rows] = await db.query('SELECT * FROM Teacher'); 
-//       console.log('Query successful:', rows);
-//       res.json(rows);
-//     } catch (error) {
-//       console.error('Error occurred:', error);
-//       res.status(500).send(error.message);
-//     }
-//   });
+app.get('/teachers', async (req, res) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM Teacher'); 
+      console.log('Query successful:', rows);
+      res.json(rows);
+    } catch (error) {
+      console.error('Error occurred:', error);
+      res.status(500).send(error.message);
+    }
+  });
