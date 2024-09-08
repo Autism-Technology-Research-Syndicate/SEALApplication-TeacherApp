@@ -13,7 +13,7 @@ Make sure you have Node.js installed on your system. If Node.js is not already i
 
 2. Install npm
 please chechk npm (Node Package Manager) is installed along with Node.js. Verify the installation by running the following command:
-###### npm -v
+###### npm -v   
 If not installed, follow next step.
 
 3. Install Required Packages
