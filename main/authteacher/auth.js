@@ -28,7 +28,7 @@ const registerTeacher = async (req, res) => {
             [email, secretPassword, name, phone]
         );
 
-        res.status(200).json(
+        res.status(201).json(
             { "message": "Teacher registered successfully"});
     } catch (error) {
         res.status(500).json(
