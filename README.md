@@ -18,13 +18,13 @@ If not installed, follow next step.
 
 3. Install Required Packages
 Run the following commands in your project directory to install the necessary dependencies:
-  ###### npm install
+    ###### npm install
 
 This will install all the packages listed in the package.json file.
 
 4. Install Additional Packages
 You will also need to install the qrcode package separately:
-  ###### npm install qrcode
+    ###### npm install qrcode
 
 ## Running the Backend
 Once all packages are installed, you can run and test the backend, please input the below instruction in your terminal.
