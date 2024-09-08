@@ -18,7 +18,7 @@ If not installed, follow next step.
 
 3. Install Required Packages
 Run the following commands in your project directory to install the necessary dependencies:
-    ###### npm install
+    ###### npm install (Before you run our test our backend, please install mysql and create data tables.)
 
 This will install all the packages listed in the package.json file.
 
@@ -42,5 +42,6 @@ For our project, we use the mysql database.
 
 ## There are three data tables: 
 #####  Course, Room, Teacher
+#####  please see the sql file 
 
 
