@@ -42,6 +42,6 @@ For our project, we use the mysql database.
 
 ## There are three data tables: 
 #####  Course, Room, Teacher
-#####  please see the sql file 
+#####  please see the sql file(in our main sources)
 
 
