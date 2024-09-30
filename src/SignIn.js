@@ -2,7 +2,6 @@ import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
-import ReCAPTCHA from 'react-google-recaptcha';
 import Logo from './components/Logo';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import backgroundImage from './components/background.png'; // Import the new background
@@ -63,18 +62,15 @@ const SignIn = () => {
                 <Field type="password" name="password" style={styles.input} />
                 <ErrorMessage name="password" component="div" style={styles.error} />
               </div>
-              <ReCAPTCHA
-                sitekey="your_site_key"
-                onChange={(value) => console.log('Captcha value:', value)}
-                style={styles.recaptcha}
-              />
               <button type="submit" disabled={isSubmitting} style={styles.button}>
                 {isSubmitting ? 'Signing In...' : 'Sign In'}
               </button>
             </Form>
           )}
         </Formik>
-        <p style={styles.signUpText}>Don't have an account? <Link to="/signup" style={styles.link}>Sign Up</Link></p>
+        <p style={styles.signUpText}>
+          Don't have an account? <Link to="/signup" style={styles.link}>Sign Up</Link>
+        </p>
       </div>
     </div>
   );
@@ -131,9 +127,6 @@ const styles = {
     color: 'red',
     fontSize: '0.8rem',
     marginTop: '5px',
-  },
-  recaptcha: {
-    margin: '20px 0',
   },
   button: {
     backgroundColor: '#4CAF50',

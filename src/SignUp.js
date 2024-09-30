@@ -2,9 +2,8 @@ import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import * as Yup from 'yup';
-import ReCAPTCHA from 'react-google-recaptcha';
 import Logo from './components/Logo';
-import backgroundImage from './components/background.png'; // Your background image
+import backgroundImage from './components/background.png'; // Import the new background
 
 // Fake API function to simulate a network request
 const fakeRegisterAPI = (data) => {
@@ -95,12 +94,6 @@ const SignUp = () => {
                 <ErrorMessage name="confirmPassword" component="div" style={styles.error} />
               </div>
 
-              <ReCAPTCHA
-                sitekey="your_site_key"
-                onChange={(value) => console.log('Captcha value:', value)}
-                style={styles.captcha}
-              />
-
               {status && status.success && (
                 <div style={styles.successMessage}>{status.success}</div>
               )}
@@ -129,6 +122,7 @@ const SignUp = () => {
   );
 };
 
+// Styles
 const styles = {
   container: {
     position: 'relative',
@@ -200,9 +194,6 @@ const styles = {
     color: '#e74c3c',
     marginTop: '5px',
     fontSize: '0.9rem',
-  },
-  captcha: {
-    margin: '20px 0',
   },
   submitButton: {
     background: 'linear-gradient(135deg, #6a11cb, #2575fc)', // Vibrant gradient
