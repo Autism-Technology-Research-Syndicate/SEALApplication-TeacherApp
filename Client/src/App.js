@@ -6,6 +6,7 @@ import ThankYouPage from './ThankYouPage';
 import Dashboard from './Dashboard';
 import CourseManagement from './CourseManagement';
 import Profile from './Profile';
+import Classroom from './Classroom';
 
 const App = () => (
   <Router>
@@ -14,9 +15,10 @@ const App = () => (
       <Route path="/signup" element={<SignUp />} />
       <Route path="/thank-you" element={<ThankYouPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/course-management" element={<CourseManagement />} /> {/* Course Management page */}
+      <Route path="/course-management" element={<CourseManagement />} />
       <Route path="/profile" element={<Profile />} />
-      <Route path="/" element={<SignIn />} /> {/* Default route */}
+      <Route path="/classroom" element={<Classroom />} /> 
+      <Route path="/" element={<SignIn />} /> 
     </Routes>
   </Router>
 );

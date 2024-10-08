@@ -1,33 +1,56 @@
-import React, { useState } from 'react';
-
-// Simulate data
-const initialCourses = [
-  { id: 1, name: 'Math', description: 'Mathematics course' },
-  { id: 2, name: 'Science', description: 'Science course' },
-  { id: 3, name: 'History', description: 'History course' },
-];
+import React, { useState, useEffect } from 'react';
+import axios from './axiosInstance'; // Use custom Axios instance
 
 const CourseManagement = () => {
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses, setCourses] = useState([]);
   const [editingCourse, setEditingCourse] = useState(null);
-  const [newCourse, setNewCourse] = useState({ name: '', description: '' });
+  const [newCourse, setNewCourse] = useState({ name: '' });
 
-  const handleAddCourse = () => {
+  // Fetch courses from API when component mounts
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get('/courses/search');
+        setCourses(response.data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const handleAddCourse = async () => {
     if (newCourse.name && newCourse.description) {
-      setCourses([...courses, { id: courses.length + 1, ...newCourse }]);
-      setNewCourse({ name: '', description: '' });
+      try {
+        const response = await axios.post('/courses/insert', newCourse);
+        setCourses([...courses, response.data]);
+        setNewCourse({ name: ''});
+      } catch (error) {
+        console.error('Error adding course:', error);
+      }
     }
   };
 
-  const handleUpdateCourse = () => {
+  const handleUpdateCourse = async () => {
     if (editingCourse) {
-      setCourses(courses.map(course => (course.id === editingCourse.id ? editingCourse : course)));
-      setEditingCourse(null);
+      try {
+        await axios.put(`/courses/update/${editingCourse.id}`, editingCourse);
+        setCourses(courses.map(course => (course.id === editingCourse.id ? editingCourse : course)));
+        setEditingCourse(null);
+      } catch (error) {
+        console.error('Error updating course:', error);
+      }
     }
   };
 
-  const handleDeleteCourse = (courseId) => {
-    setCourses(courses.filter(course => course.id !== courseId));
+  const handleDeleteCourse = async (courseId) => {
+    try {
+      await axios.delete(`/courses/delete/${courseId}`);
+      setCourses(courses.filter(course => course.course_id !== courseId));
+    } catch (error) {
+      console.error('Error deleting course:', error);
+    }
   };
 
   return (
@@ -73,7 +96,12 @@ const CourseManagement = () => {
       <ul style={styles.courseList}>
         {courses.map(course => (
           <li key={course.id} style={styles.courseItem}>
-            {course.name}: {course.description}
+            <strong>{course.course_name}</strong>: {course.description}
+            {/* Display additional course information if available */}
+            {course.instructor && <div>Instructor: {course.instructor}</div>}
+            {course.duration && <div>Duration: {course.duration} hours</div>}
+            {course.credits && <div>Credits: {course.credits}</div>}
+            {course.schedule && <div>Schedule: {course.schedule}</div>}
             <button
               onClick={() => setEditingCourse(course)}
               style={styles.editButton}
@@ -81,7 +109,7 @@ const CourseManagement = () => {
               Edit
             </button>
             <button
-              onClick={() => handleDeleteCourse(course.id)}
+              onClick={() => handleDeleteCourse(course.course_id)}
               style={styles.deleteButton}
             >
               Delete

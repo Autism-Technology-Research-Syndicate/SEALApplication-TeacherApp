@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, Grid, TextField, MenuItem } from '@mui/material'; 
-import logo from './components/Logo.png'; 
-import { TimePicker } from '@mui/x-date-pickers'; 
+import { Card, CardContent, Typography, Button, Grid, TextField, MenuItem } from '@mui/material'; // Ensure MenuItem is imported
+import logo from './components/Logo.png';
+import { TimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import axios from './axiosInstance'; // Use the custom Axios instance
+import axios from './axiosInstance'; // Use custom Axios instance
+import Classroom from './Classroom'; // Import Classroom component
 
 const Dashboard = () => {
-  const [selectedSection, setSelectedSection] = useState(null); // State to manage selected section
-  const [editClass, setEditClass] = useState(null); // State to manage class being edited
-  const [newClass, setNewClass] = useState({ name: '', teacher: '', days: [], startTime: null, endTime: null }); // State for new class information
-  const [classes, setClasses] = useState([]); // State for classes fetched from API
+  const [selectedSection, setSelectedSection] = useState('home'); // Default to 'home' section
+   const [classes, setClasses] = useState([]); // State for classes fetched from API
   const [courses, setCourses] = useState([]); // State for courses fetched from API
-  const [courseNameColor, setCourseNameColor] = useState('black'); // State for course name color
-  const userName = 'John Doe'; // Simulating logged-in user's name; replace this with actual logic if needed
+  const [messages, setMessages] = useState([]); // State for messages from students
+  const userName = ''; // Simulating logged-in user's name; replace this with actual logic if needed
   const navigate = useNavigate(); // Hook for navigation
 
   // Fetch classroom and course data from backend API when the component mounts
@@ -39,13 +38,9 @@ const Dashboard = () => {
 
     fetchClasses(); // Fetch classes
     fetchCourses(); // Fetch courses
-    setSelectedSection('home'); // Automatically select 'home' section on mount
   }, []); // Empty dependency array ensures this runs once on mount
 
   // Function to handle section change
-  const handleSectionChange = (section) => {
-    setSelectedSection(section); // Update the selected section state
-  };
 
   // Function to navigate to the user profile
   const handleUserProfile = () => {
@@ -57,41 +52,13 @@ const Dashboard = () => {
     setSelectedSection('home'); // Set selected section to 'home' to display Home content
   };
 
-  // Function to handle adding a new class
-  const handleAddClass = async () => {
-    try {
-      const response = await axios.post('/courses/insert', newClass); // Call API to add new class
-      setClasses([...classes, response.data]); // Update classes state with the newly added class
-      setNewClass({ name: '', teacher: '', days: [], startTime: null, endTime: null }); // Reset new class form
-      setSelectedSection('home'); // Optionally, navigate back to Home after adding a class
-    } catch (error) {
-      console.error('Error adding class:', error); // Log any errors
-    }
-  };
-
   // Function to handle editing a class
-  const handleEditClass = (classId) => {
-    const classToEdit = classes.find(c => c.id === classId); // Find class to edit by ID
-    setEditClass(classToEdit); // Set the class to be edited
-  };
 
   // Function to handle deleting a class
-  const handleDeleteClass = async (classId) => {
-    try {
-      await axios.delete(`/courses/${classId}`); // Call API to delete the class
-      setClasses(classes.filter(c => c.id !== classId)); // Remove the deleted class from state
-    } catch (error) {
-      console.error('Error deleting class:', error); // Log any errors
-    }
-  };
-
-  // Predefined color names
-  const colorOptions = ['red', 'blue', 'green', 'black', 'purple', 'orange'];
 
   return (
     <div style={styles.container}>
-      <div style={styles.sidebar}>   
-
+      <div style={styles.sidebar}>
         {/* Clickable logo that navigates to Home */}
         <div onClick={handleHomeClick} style={{ cursor: 'pointer' }}>
           <img src={logo} alt="Company Logo" style={styles.logo} />
@@ -106,20 +73,23 @@ const Dashboard = () => {
           </Button>
 
           <Button
-            style={selectedSection === 'classroom' ? styles.sidebarButtonActive : styles.sidebarButton}
-            onClick={() => handleSectionChange('classroom')}
+            component={Link}
+            to="/classroom"
+            style={styles.sidebarButton}
           >
             Classroom
           </Button>
           <Button
-            style={selectedSection === 'course-management' ? styles.sidebarButtonActive : styles.sidebarButton}
-            onClick={() => handleSectionChange('course-management')}
+            component={Link}
+            to="/course-management"
+            style={styles.sidebarButton}
           >
             Course Management
           </Button>
           <Button
-            style={selectedSection === 'profile' ? styles.sidebarButtonActive : styles.sidebarButton}
-            onClick={() => handleSectionChange('profile')}
+            component={Link}
+            to="/profile"
+            style={styles.sidebarButton}
           >
             Personal Information
           </Button>
@@ -143,7 +113,7 @@ const Dashboard = () => {
                   <ul style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {classes.slice(0, 10).map(course => ( // Show only the first 10 classes
                       <li key={course.room_id} style={styles.listItem}>
-                        <Typography style={{ fontStyle: 'italic', color: courseNameColor }}>{course.course_name}</Typography> {/* Adjust color */}
+                        <Typography style={{ fontStyle: 'italic', color: 'black' }}>{course.course_name}</Typography> {/* Adjust color */}
                         <Typography style={{ fontWeight: 'bold', color: 'black' }}>Taught by: {course.teacher_name}</Typography>
                         <Typography style={{ color: 'black', fontSize: '1.0rem', fontWeight: 'bold' }}>
                           Start Time: {new Date(course.start_time).toLocaleString('en-US', { timeZone: 'America/New_York' })}
@@ -155,28 +125,6 @@ const Dashboard = () => {
                       </li>
                     ))}
                   </ul>
-
-                  {/* Color picker */}
-                  <div>
-                    <Typography>Select Course Name Color:</Typography>
-                    <TextField
-                      select
-                      label="Color"
-                      value={courseNameColor}
-                      onChange={(e) => setCourseNameColor(e.target.value)}
-                      fullWidth
-                      margin="normal"
-                    >
-                      {colorOptions.map(color => (
-                        <MenuItem key={color} value={color}>
-                          {color}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </div>
-                  <Button variant="contained" color="primary" onClick={() => setSelectedSection('add-class')}>
-                    Add New Class
-                  </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -184,18 +132,15 @@ const Dashboard = () => {
               <Card style={styles.card}>
                 <CardContent>
                   <Typography variant="h5" gutterBottom style={styles.cardTitle}>
-                    Course Management
+                    Course information
                   </Typography>
                   <ul style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                    {courses.slice(0, 10).map(course => ( // Show only the first 10 courses
-                      <li key={course.course_id} style={styles.listItem}>
-                        <Typography style={{ fontWeight: 'bold', color: 'black' }}>{course.course_name}</Typography>
+                    {courses.map(course => (
+                      <li key={course.id} style={styles.listItem}>
+                        <Typography style={{ fontStyle: 'italic', color: 'black' }}>{course.course_name}</Typography>
                       </li>
                     ))}
                   </ul>
-                  <Button variant="contained" color="primary" component={Link} to="/course-management" style={styles.linkButton}>
-                    Manage Courses
-                  </Button>
                 </CardContent>
               </Card>
             </Grid>
@@ -203,100 +148,24 @@ const Dashboard = () => {
               <Card style={styles.card}>
                 <CardContent>
                   <Typography variant="h5" gutterBottom style={styles.cardTitle}>
-                    Personal Information
+                    Messages
                   </Typography>
-                  <Typography style={{ color: 'black' }}>Name: {userName}</Typography>
-                  <Button variant="contained" color="primary" component={Link} to="/profile" style={styles.linkButton}>
-                    Edit Profile
-                  </Button>
+                  <ul style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    {messages.map((message, index) => (
+                      <li key={index} style={styles.listItem}>
+                        <Typography style={{ color: 'black' }}>{message}</Typography>
+                      </li>
+                    ))}
+                  </ul>
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
         ) : selectedSection === 'classroom' ? (
-          <Card style={styles.card}>
-            <CardContent>
-              <Typography variant="h5" gutterBottom style={styles.cardTitle}>
-                Classroom Information
-              </Typography>
-              <ul>
-                {classes.map(course => (
-                  <li key={course.room_id} style={styles.listItem}>
-                    <Typography style={{ fontStyle: 'italic', color: courseNameColor }}>{course.course_name}</Typography> {/* Adjust color */}
-                    <Typography style={{ fontWeight: 'bold', color: 'black' }}>Taught by: {course.teacher_name}</Typography>
-                    <Typography style={{ color: 'black', fontSize: '1.0rem', fontWeight: 'bold' }}>
-                      Start Time: {new Date(course.start_time).toLocaleString('en-US', { timeZone: 'America/New_York' })}
-                    </Typography>
-                    <Typography style={{ color: 'black', fontSize: '1.0rem', fontWeight: 'bold' }}>
-                      End Time: {new Date(course.end_time).toLocaleString('en-US', { timeZone: 'America/New_York' })}
-                    </Typography>
-                    <hr style={{ border: '1px solid #ccc', margin: '10px 0' }} />
-                  </li>
-                ))}
-              </ul>
-              <Button variant="contained" color="primary" onClick={() => setSelectedSection('add-class')}>
-                Add New Class
-              </Button>
-            </CardContent>
-          </Card>
-        ) : selectedSection === 'add-class' ? (
-          <Card style={styles.card}>
-            <CardContent>
-              <Typography variant="h5" gutterBottom style={styles.cardTitle}>
-                Add New Class
-              </Typography>
-              <TextField
-                label="Class Name"
-                value={newClass.name}
-                onChange={(e) => setNewClass({ ...newClass, name: e.target.value })}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Teacher's Name"
-                value={newClass.teacher}
-                onChange={(e) => setNewClass({ ...newClass, teacher: e.target.value })}
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                select
-                label="Days of the Week"
-                value={newClass.days}
-                onChange={(e) => setNewClass({ ...newClass, days: e.target.value })}
-                fullWidth
-                margin="normal"
-                SelectProps={{
-                  multiple: true,
-                }}
-              >
-                <MenuItem value="Mon">Monday</MenuItem>
-                <MenuItem value="Tue">Tuesday</MenuItem>
-                <MenuItem value="Wed">Wednesday</MenuItem>
-                <MenuItem value="Thu">Thursday</MenuItem>
-                <MenuItem value="Fri">Friday</MenuItem>
-                <MenuItem value="Sat">Saturday</MenuItem>
-                <MenuItem value="Sun">Sunday</MenuItem>
-              </TextField>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <TimePicker
-                  label="Start Time"
-                  value={newClass.startTime}
-                  onChange={(newValue) => setNewClass({ ...newClass, startTime: newValue })}
-                  renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-                />
-                <TimePicker
-                  label="End Time"
-                  value={newClass.endTime}
-                  onChange={(newValue) => setNewClass({ ...newClass, endTime: newValue })}
-                  renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
-                />
-              </LocalizationProvider>
-              <Button variant="contained" color="primary" onClick={handleAddClass}>
-                Add Class
-              </Button>
-            </CardContent>
-          </Card>
+          <Classroom
+            classes={classes}
+            setSelectedSection={setSelectedSection}
+          />
         ) : selectedSection === 'course-management' ? (
           <Card style={styles.card}>
             <CardContent>
@@ -340,7 +209,7 @@ const styles = {
     background: 'linear-gradient(135deg, #00aaff, #0044ff)',
     padding: '20px',
     boxShadow: '4px 0 8px rgba(0, 0, 0, 0.2)',
-    position: 'fixed',
+    position: 'fixed', // Ensures the sidebar is fixed on the left
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -377,7 +246,7 @@ const styles = {
     boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
   },
   mainContent: {
-    marginLeft: '270px',
+    marginLeft: '270px', // Matches the sidebar width to prevent overlap
     padding: '20px',
     width: 'calc(100% - 270px)',
   },
@@ -396,8 +265,6 @@ const styles = {
     borderRadius: '12px',
     boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
     transition: 'transform 0.2s ease-in-out',
-    // Note: Pseudo-classes like &:hover cannot be used in inline styles
-    // Consider using a CSS-in-JS library or external CSS for hover effects
   },
   cardTitle: {
     fontSize: '20px',
