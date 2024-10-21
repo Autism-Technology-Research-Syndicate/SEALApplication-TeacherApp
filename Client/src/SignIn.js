@@ -25,28 +25,32 @@ const SignIn = () => {
           validationSchema={validationSchema}
           onSubmit={async (values, { setSubmitting, setErrors }) => {
             try {
-              // 调用实际的登录 API
+              // Call the actual login API
               const response = await axios.post('http://localhost:3001/api/teachers/login', values, {
                 headers: {
-                  'Content-Type': 'application/json', // 设置正确的头部信息
+                  'Content-Type': 'application/json', // Set the correct header information
                 },
-                withCredentials: true, // 如果你的API需要跨域携带cookie
+                withCredentials: true, // If your API requires cross-domain cookies
               });
               
-              // 登录成功，存储 token 并重定向
+              // On successful login, store the token and redirect
               if (response.data.token) {
-                localStorage.setItem('token', response.data.token); // 可以存储 token 以备后续使用
-                navigate('/dashboard'); // 登录成功后重定向
+                localStorage.setItem('token', response.data.token); // Store token for later use
+                const teacherData = response.data.checkingteacher[0]; // Get teacher data
+                // Print checking teacher information
+                console.log('Checking Teacher Info:', response.data.checkingteacher); // Add this line to print information
+                // Pass user data to Dashboard
+                navigate('/dashboard', { state: { teacherData: teacherData } }); // Ensure the API response includes teacherData
               }
             } catch (error) {
-              // 错误处理
+              // Error handling
               if (error.response) {
-                setErrors({ email: error.response.data.message }); // 使用 API 返回的错误消息
+                setErrors({ email: error.response.data.message }); // Use the error message returned by the API
               } else {
-                setErrors({ email: 'An unexpected error occurred' }); // 处理未知错误
+                setErrors({ email: 'An unexpected error occurred' }); // Handle unknown errors
               }
             } finally {
-              setSubmitting(false); // 停止加载状态
+              setSubmitting(false); // Stop loading state
             }
           }}
         >

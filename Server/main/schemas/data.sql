@@ -17,8 +17,8 @@ INSERT INTO Course (course_name) VALUES ('Biology');
 */
 
 /*
- INSERT INTO Room （course_id, teacher_id, start_time, end_time, capacity) VALUES
-    (1, 1, '2024-08-30T09:00:00.000Z', '2024-08-30T10:30:00.000Z', 30),
-    (1, 2, '2024-08-30T11:00:00.000Z', '2024-08-30T12:30:00.000Z', 40),
-    (2, 3, '2024-08-30T13:00:00.000Z', '2024-08-30T14:30:00.000Z', 50);
+INSERT INTO Room (course_id, teacher_id, start_time, end_time, capacity) VALUES
+    (1, 1, '2024-08-03 09:00:00', '2024-08-30 10:30:00', 30),
+    (1, 2, '2024-08-30 11:00:00', '2024-08-30 12:30:00', 40),
+    (2, 3, '2024-08-30 13:00:00', '2024-08-30 14:30:00', 50);
 */

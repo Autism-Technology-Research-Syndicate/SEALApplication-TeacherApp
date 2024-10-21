@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, Grid, TextField, MenuItem } from '@mui/material'; // Ensure MenuItem is imported
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Card, CardContent, Typography, Button, Grid } from '@mui/material';
 import logo from './components/Logo.png';
-import { TimePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import axios from './axiosInstance'; // Use custom Axios instance
 import Classroom from './Classroom'; // Import Classroom component
+import CourseManagement from './CourseManagement'; // Import CourseManagement component
 
 const Dashboard = () => {
   const [selectedSection, setSelectedSection] = useState('home'); // Default to 'home' section
-   const [classes, setClasses] = useState([]); // State for classes fetched from API
+  const [classes, setClasses] = useState([]); // State for classes fetched from API
   const [courses, setCourses] = useState([]); // State for courses fetched from API
   const [messages, setMessages] = useState([]); // State for messages from students
-  const userName = ''; // Simulating logged-in user's name; replace this with actual logic if needed
   const navigate = useNavigate(); // Hook for navigation
+  const location = useLocation(); // Get location object
+  const { teacherData } = location.state || {}; // Extract teacherData from state
+  const userName = teacherData ? teacherData.teacher_name : ''; // Use teacher name from teacherData
 
-  // Fetch classroom and course data from backend API when the component mounts
+  // Fetch classes and courses on component mount
   useEffect(() => {
     const fetchClasses = async () => {
       try {
         const response = await axios.get('/rooms/search'); // Adjust API URL
         setClasses(response.data); // Set classes data from API
+        console.log('Fetched classes:', response.data); // Log the fetched classes data
       } catch (error) {
         console.error('Error fetching classes:', error); // Log any errors
       }
@@ -31,30 +32,26 @@ const Dashboard = () => {
       try {
         const response = await axios.get('/courses/search'); // Adjust API URL for courses
         setCourses(response.data); // Set courses data from API
+        console.log('Fetched courses:', response.data); // Log the fetched courses data
       } catch (error) {
         console.error('Error fetching courses:', error); // Log any errors
       }
     };
 
-    fetchClasses(); // Fetch classes
-    fetchCourses(); // Fetch courses
-  }, []); // Empty dependency array ensures this runs once on mount
-
-  // Function to handle section change
+    // Call the fetch functions
+    fetchClasses();
+    fetchCourses();
+  }, []); // Make sure to include an empty dependency array to run this effect only once
 
   // Function to navigate to the user profile
   const handleUserProfile = () => {
-    navigate('/profile'); // Navigate to the profile page
+    navigate('/profile', { state: { teacherData } }); // Pass teacherData
   };
 
   // Function to handle clicking the Home button
   const handleHomeClick = () => {
     setSelectedSection('home'); // Set selected section to 'home' to display Home content
   };
-
-  // Function to handle editing a class
-
-  // Function to handle deleting a class
 
   return (
     <div style={styles.container}>
@@ -87,9 +84,8 @@ const Dashboard = () => {
             Course Management
           </Button>
           <Button
-            component={Link}
-            to="/profile"
             style={styles.sidebarButton}
+            onClick={handleUserProfile} 
           >
             Personal Information
           </Button>
@@ -113,7 +109,7 @@ const Dashboard = () => {
                   <ul style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {classes.slice(0, 10).map(course => ( // Show only the first 10 classes
                       <li key={course.room_id} style={styles.listItem}>
-                        <Typography style={{ fontStyle: 'italic', color: 'black' }}>{course.course_name}</Typography> {/* Adjust color */}
+                        <Typography style={{ fontStyle: 'italic', color: 'black' }}>{course.course_name}</Typography>
                         <Typography style={{ fontWeight: 'bold', color: 'black' }}>Taught by: {course.teacher_name}</Typography>
                         <Typography style={{ color: 'black', fontSize: '1.0rem', fontWeight: 'bold' }}>
                           Start Time: {new Date(course.start_time).toLocaleString('en-US', { timeZone: 'America/New_York' })}
@@ -132,7 +128,7 @@ const Dashboard = () => {
               <Card style={styles.card}>
                 <CardContent>
                   <Typography variant="h5" gutterBottom style={styles.cardTitle}>
-                    Course information
+                    Course Information
                   </Typography>
                   <ul style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {courses.map(course => (
@@ -164,19 +160,11 @@ const Dashboard = () => {
         ) : selectedSection === 'classroom' ? (
           <Classroom
             classes={classes}
-            setSelectedSection={setSelectedSection}
           />
         ) : selectedSection === 'course-management' ? (
-          <Card style={styles.card}>
-            <CardContent>
-              <Typography variant="h5" gutterBottom style={styles.cardTitle}>
-                Course Management
-              </Typography>
-              <Button variant="contained" color="primary" component={Link} to="/course-management" style={styles.linkButton}>
-                Manage Courses
-              </Button>
-            </CardContent>
-          </Card>
+          <CourseManagement
+            courses={courses} // Pass courses as prop
+          />
         ) : selectedSection === 'profile' && (
           <Card style={styles.card}>
             <CardContent>
@@ -200,7 +188,6 @@ const styles = {
     display: 'flex',
     minHeight: '100vh',
     backgroundColor: '#f5f5f5',
-    backgroundImage: 'url(https://yourbackgroundimageurl.com)', // Set your background image URL here
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   },
@@ -242,41 +229,36 @@ const styles = {
   },
   sidebarButtonActive: {
     backgroundColor: '#e0e0e0',
-    transform: 'scale(0.98)',
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3)',
+    transform: 'scale(1.05)', // Slightly enlarge active button
   },
   mainContent: {
-    marginLeft: '270px', // Matches the sidebar width to prevent overlap
+    flex: 1,
+    marginLeft: '250px', // Make space for the sidebar
     padding: '20px',
-    width: 'calc(100% - 270px)',
+    backgroundColor: '#fff',
   },
   header: {
     display: 'flex',
     justifyContent: 'flex-end',
-    padding: '20px',
+    marginBottom: '20px',
   },
   userButton: {
-    borderRadius: '12px',
-    fontSize: '16px',
-    fontWeight: 'bold',
+    marginLeft: 'auto',
   },
   card: {
     marginBottom: '20px',
-    borderRadius: '12px',
-    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-    transition: 'transform 0.2s ease-in-out',
+    borderRadius: '10px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
   },
   cardTitle: {
-    fontSize: '20px',
     fontWeight: 'bold',
-    marginBottom: '10px',
+    color: '#333',
   },
   listItem: {
-    fontSize: '16px',
-    padding: '5px 0',
+    marginBottom: '10px',
   },
   linkButton: {
-    marginTop: '10px',
+    marginTop: '15px',
   },
 };
 
